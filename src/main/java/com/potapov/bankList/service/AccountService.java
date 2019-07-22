@@ -71,7 +71,28 @@ public class AccountService extends BankListJDBC implements AccountDao {
 
     @Override
     public Account getByUserId(int userId) {
-        return null;
+
+        String sql = "SELECT * FROM ACCOUNT WHERE USERID = ?";
+        Account account = new Account();
+
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, userId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            account.setAccountId(resultSet.getInt("ACCOUNTID"));
+            account.setAccount(resultSet.getInt("ACCOUNT"));
+            account.setUserId(resultSet.getInt("USERID"));
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            userService.closingConnectionAndStatement();
+        }
+
+        return account;
     }
 
     @Override
