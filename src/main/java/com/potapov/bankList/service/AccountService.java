@@ -113,7 +113,20 @@ public class AccountService extends BankListJDBC implements AccountDao {
 
     @Override
     public Boolean delete(int accountId) {
-        return null;
+        String sql = "DELETE FROM ACCOUNT WHERE ACCOUNTID = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, accountId);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            userService.closingConnectionAndStatement();
+        }
+        return true;
     }
 
 
