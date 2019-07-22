@@ -12,9 +12,9 @@ public interface AccountDao {
 
     Account getById(int accountId);
 
-    Account getByUserId(int usrtId);
+    Account getByUserId(int userId);
 
-    Account update(int accountId, Account account);
+    void update(Account account);
 
     Boolean delete(int accountId);
 

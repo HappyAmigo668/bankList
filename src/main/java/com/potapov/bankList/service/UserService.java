@@ -12,7 +12,6 @@ public class UserService extends BankListJDBC implements UserDao {
 
     private Connection connection = getConnection();
     private PreparedStatement preparedStatement = null;
-    private Statement statement = null;
 
     @Override
     public Boolean add(User user) {
@@ -44,7 +43,7 @@ public class UserService extends BankListJDBC implements UserDao {
         String sql = "SELECT * FROM USER";
 
         try {
-            statement = connection.createStatement();
+            Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
 
             while (resultSet.next()){
@@ -135,7 +134,7 @@ public class UserService extends BankListJDBC implements UserDao {
     }
 
 
-    private void closingConnectionAndStatement() {
+    public void closingConnectionAndStatement() {
         if(preparedStatement != null){
             try {
                 preparedStatement.close();
