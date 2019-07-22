@@ -95,10 +95,26 @@ public class UserService extends BankListJDBC implements UserDao {
         return user;
     }
 
-    @Override
-    public User update(User user) {
 
-        return null;
+    @Override
+    public void update(User user) {
+
+        String sql = "UPDATE USER SET NAME = ?, SURENAME = ? WHERE USERID = ?";
+
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getSureName());
+            preparedStatement.setInt(3, user.getUserId());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            closingConnectionandStatement();
+        }
     }
 
     @Override
