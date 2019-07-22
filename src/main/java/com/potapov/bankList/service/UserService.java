@@ -3,7 +3,6 @@ package com.potapov.bankList.service;
 import com.potapov.bankList.connection.BankListJDBC;
 import com.potapov.bankList.dao.UserDao;
 import com.potapov.bankList.entity.User;
-import com.sun.xml.internal.bind.v2.model.core.ID;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class UserService extends BankListJDBC implements UserDao {
             e.printStackTrace();
         }
         finally {
-            closingConnectionandStatement();
+            closingConnectionAndStatement();
         }
 
         return true;
@@ -61,7 +60,7 @@ public class UserService extends BankListJDBC implements UserDao {
             e.printStackTrace();
         }
         finally {
-            closingConnectionandStatement();
+            closingConnectionAndStatement();
         }
 
         return userList;
@@ -89,7 +88,7 @@ public class UserService extends BankListJDBC implements UserDao {
             e.printStackTrace();
         }
         finally {
-            closingConnectionandStatement();
+            closingConnectionAndStatement();
         }
 
         return user;
@@ -113,16 +112,30 @@ public class UserService extends BankListJDBC implements UserDao {
             e.printStackTrace();
         }
         finally {
-            closingConnectionandStatement();
+            closingConnectionAndStatement();
         }
     }
 
     @Override
     public Boolean delete(int userId) {
-        return null;
+        String sql = "DELETE FROM USER WHERE USERID = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, userId);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            closingConnectionAndStatement();
+        }
+        return true;
     }
 
-    private void closingConnectionandStatement() {
+
+    private void closingConnectionAndStatement() {
         if(preparedStatement != null){
             try {
                 preparedStatement.close();
