@@ -4,17 +4,14 @@ import com.potapov.bankList.connection.BankListJDBC;
 import com.potapov.bankList.dao.AccountDao;
 import com.potapov.bankList.entity.Account;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccountService extends BankListJDBC implements AccountDao {
 
     private Connection connection = getConnection();
     private PreparedStatement preparedStatement = null;
-    private Statement statement = null;
     private UserService userService = new UserService();
 
     @Override
@@ -40,7 +37,31 @@ public class AccountService extends BankListJDBC implements AccountDao {
 
     @Override
     public List<Account> getAll() {
-        return null;
+
+        List<Account> accountList = new ArrayList<>();
+        String sql = "SELECT * FROM ACCOUNT";
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while (resultSet.next()){
+                Account account = new Account();
+                account.setAccountId(resultSet.getInt("ACCOUNTID"));
+                account.setAccount(resultSet.getInt("ACCOUNT"));
+                account.setUserId(resultSet.getInt("USERID"));
+
+                accountList.add(account);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            userService.closingConnectionAndStatement();
+        }
+
+        return accountList;
     }
 
     @Override

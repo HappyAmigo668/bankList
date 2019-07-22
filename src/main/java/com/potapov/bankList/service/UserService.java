@@ -48,7 +48,7 @@ public class UserService extends BankListJDBC implements UserDao {
 
             while (resultSet.next()){
                 User user = new User();
-                user.setUserId(resultSet.getInt("ID"));
+                user.setUserId(resultSet.getInt("USERID"));
                 user.setName(resultSet.getString("NAME"));
                 user.setSureName(resultSet.getString("SURENAME"));
 
