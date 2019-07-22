@@ -90,10 +90,25 @@ public class AccountService extends BankListJDBC implements AccountDao {
     }
 
 
-
     @Override
     public void update(Account account) {
 
+        String sql = "UPDATE ACCOUNT SET ACCOUNT = ?, USERID = ? WHERE ACCOUNTID = ?";
+
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, account.getAccount());
+            preparedStatement.setInt(2, account.getUserId());
+            preparedStatement.setInt(3, account.getAccountId());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            userService.closingConnectionAndStatement();
+        }
     }
 
     @Override
