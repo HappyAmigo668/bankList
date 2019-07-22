@@ -12,8 +12,6 @@ public interface AccountDao {
 
     Account getById(int accountId);
 
-    Account getByUserId(int userId);
-
     void update(Account account);
 
     Boolean delete(int accountId);

@@ -66,18 +66,12 @@ public class AccountService extends BankListJDBC implements AccountDao {
 
     @Override
     public Account getById(int accountId) {
-        return null;
-    }
-
-    @Override
-    public Account getByUserId(int userId) {
-
-        String sql = "SELECT * FROM ACCOUNT WHERE USERID = ?";
+        String sql = "SELECT * FROM ACCOUNT WHERE ACCOUNTID = ?";
         Account account = new Account();
 
         try {
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(1, accountId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             account.setAccountId(resultSet.getInt("ACCOUNTID"));
@@ -94,6 +88,8 @@ public class AccountService extends BankListJDBC implements AccountDao {
 
         return account;
     }
+
+
 
     @Override
     public void update(Account account) {
