@@ -1,154 +1,89 @@
 package com.potapov.bankList.service;
 
-import com.potapov.bankList.connection.BankListJDBC;
-import com.potapov.bankList.dao.UserDao;
 import com.potapov.bankList.entity.User;
+import com.potapov.bankList.repository.UserRepository;
+import org.apache.velocity.exception.ResourceNotFoundException;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
-public class UserService extends BankListJDBC implements UserDao {
+public class UserService {
 
-    private Connection connection = getConnection();
-    private PreparedStatement preparedStatement = null;
+    private UserRepository userRepository;
 
-    @Override
-    public Boolean add(User user) {
-        String sql = "INSERT INTO USER(USERID, NAME, SURENAME) VALUES(?,?,?)";
+    User getById(int userId) throws Exception {
 
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        if (userId >= 0) {
 
-            preparedStatement.setInt(1, user.getUserId());
-            preparedStatement.setString(2, user.getName());
-            preparedStatement.setString(3, user.getSureName());
+            User user = userRepository.getById(userId);
 
-            preparedStatement.executeUpdate();
+            if (user != null) {
+                return user;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        finally {
-            closingConnectionAndStatement();
-        }
-
-        return true;
-    }
-
-    @Override
-    public List<User> getAll() {
-
-        List<User> userList = new ArrayList<>();
-        String sql = "SELECT * FROM USER";
-
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-
-            while (resultSet.next()){
-                User user = new User();
-                user.setUserId(resultSet.getInt("USERID"));
-                user.setName(resultSet.getString("NAME"));
-                user.setSureName(resultSet.getString("SURENAME"));
-
-                userList.add(user);
+            } else {
+                throw new ResourceNotFoundException("User with id: " + userId + " is not found.");
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        finally {
-            closingConnectionAndStatement();
+        } else {
+            throw new RuntimeException("Id is not valid.");
         }
 
-        return userList;
     }
 
+    List<User> getAll(){
+        return userRepository.getAll();
+    }
 
+    User add(User user){
 
-    @Override
-    public User getById(int userId) {
+        if (userRepository.getById(user.getUserId()) == null){
+            userRepository.add(user);
+        } else {
+            throw new RuntimeException("User is already exists.");
+        }
+        return user;
+    }
 
-        String sql = "SELECT * FROM USER WHERE USERID = ?";
-        User user = new User();
+    User update(User user){
 
         try {
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, userId);
-            ResultSet resultSet = preparedStatement.executeQuery();
 
-            user.setUserId(resultSet.getInt("USERID"));
-            user.setName(resultSet.getString("NAME"));
-            user.setSureName(resultSet.getString("SURENAME"));
+            User userInstance = getById(user.getUserId());
 
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
+            if (userInstance != null) {
+                userRepository.update(user);
+
+            } else {
+                throw new ResourceNotFoundException("User is not found.");
+
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            closingConnectionAndStatement();
         }
 
         return user;
     }
 
 
-    @Override
-    public void update(User user) {
+    boolean delete(int userId){
 
-        String sql = "UPDATE USER SET NAME = ?, SURENAME = ? WHERE USERID = ?";
+        if (userId >= 0) {
 
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+            User user = userRepository.getById(userId);
 
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getSureName());
-            preparedStatement.setInt(3, user.getUserId());
+            if (user != null) {
+                userRepository.delete(userId);
 
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            } else {
+                throw new ResourceNotFoundException("User is not found.");
+            }
+
+        } else {
+            throw new RuntimeException("Id is not valid.");
+
         }
-        finally {
-            closingConnectionAndStatement();
-        }
-    }
 
-    @Override
-    public Boolean delete(int userId) {
-        String sql = "DELETE FROM USER WHERE USERID = ?";
-        try {
-            preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setInt(1, userId);
-
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        finally {
-            closingConnectionAndStatement();
-        }
         return true;
     }
 
-
-    public void closingConnectionAndStatement() {
-        if(preparedStatement != null){
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if(connection != null){
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }
