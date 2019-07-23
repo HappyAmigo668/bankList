@@ -18,17 +18,35 @@ public class BankListJDBC {
             Class.forName(JDBC_DRIVER);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            System.out.println("Driver error");
+            System.err.println("Driver error");
         }
 
         try {
             connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-            System.out.println("Connection created.");
+            System.err.println("Connection created.");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Connection error.");
+            System.err.println("Connection error.");
         }
 
         return connection;
+    }
+
+    public void closingConnectionAndStatement(PreparedStatement preparedStatement, Connection connection) {
+        if(preparedStatement != null){
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(connection != null){
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
