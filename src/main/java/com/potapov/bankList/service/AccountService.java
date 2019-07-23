@@ -10,7 +10,7 @@ import java.util.List;
 public class AccountService  {
 
     private AccountRepository accountRepository;
-    private UserRepository userRepository;
+    private UserService userService;
 
     Account getById(int accountId) throws Exception {
 
@@ -39,20 +39,26 @@ public class AccountService  {
 
     Account add(Account account){
 
-        if(userRepository.getById(account.getUserId()) != null){
+        try {
 
-            if (accountRepository.getById(account.getAccountId()) == null){
+            if(userService.getById(account.getUserId()) != null){
 
-                accountRepository.add(account);
+                if (accountRepository.getById(account.getAccountId()) == null){
 
+                    accountRepository.add(account);
+
+                } else {
+
+                    throw new RuntimeException("Account is already exists.");
+                }
             } else {
 
-                throw new RuntimeException("Account is already exists.");
+                throw new ResourceNotFoundException("User is not found");
+
             }
-        } else {
 
-            throw new ResourceNotFoundException("User is not found");
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return account;
