@@ -1,5 +1,6 @@
 package com.potapov.bankList.service;
 
+import com.potapov.bankList.entity.Account;
 import com.potapov.bankList.entity.User;
 import com.potapov.bankList.repository.UserRepository;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -9,8 +10,29 @@ import java.util.List;
 public class UserService {
 
     private UserRepository userRepository;
+    private AccountService accountService;
 
-    User getById(int userId) throws Exception {
+    public User getRichestUser() throws Exception {
+        List<Account> accountList = accountService.getAll();
+
+        Account maxAccount = new Account();
+        maxAccount.setAccount(0);
+
+        for (Account account : accountList) {
+            if (account.getAccount() > maxAccount.getAccount()) {
+                maxAccount = account;
+            }
+        }
+
+
+        if (maxAccount.getAccount() > 0) {
+            return getById(maxAccount.getUserId());
+        }
+
+        return null;
+    }
+
+    public User getById(int userId) throws Exception {
 
         if (userId >= 0) {
 
@@ -29,11 +51,11 @@ public class UserService {
 
     }
 
-    List<User> getAll(){
+    public List<User> getAll(){
         return userRepository.getAll();
     }
 
-    User add(User user){
+    public User add(User user){
 
         if (userRepository.getById(user.getUserId()) == null){
             userRepository.add(user);
@@ -43,7 +65,7 @@ public class UserService {
         return user;
     }
 
-    User update(User user){
+    public User update(User user){
 
         try {
 
@@ -65,7 +87,7 @@ public class UserService {
     }
 
 
-    boolean delete(int userId){
+    public boolean delete(int userId){
 
         if (userId >= 0) {
 
